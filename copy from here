@@ -1,0 +1,37 @@
+// ==UserScript==
+// @name         block yt shorts
+// @namespace    http://tampermonkey.net/
+// @version      1.1
+// @description  i get sucked into shorts too much so i made this to block all mentions of shorts on youtube.com
+// @author       nvrevr
+// @match        *://www.youtube.com/*
+// @grant        none
+// @run-at       document-end
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    function removeShorts() {
+        document.querySelectorAll('ytd-rich-section-renderer, ytd-reel-shelf-renderer').forEach(el => el.remove());
+
+        document.querySelectorAll('ytd-guide-entry-renderer').forEach(el => {
+            if (el.textContent.includes('Shorts')) {
+                el.remove();
+            }
+        });
+
+        document.querySelectorAll('ytd-video-renderer, ytd-grid-video-renderer').forEach(el => {
+            if (el.querySelector('a#thumbnail')?.href.includes('shorts/')) {
+                el.remove();
+            }
+        });
+
+        document.querySelectorAll('ytd-reel-item-renderer').forEach(el => el.remove());
+    }
+
+    removeShorts();
+    
+    const observer = new MutationObserver(removeShorts);
+    observer.observe(document.body, { childList: true, subtree: true });
+})();
